@@ -146,12 +146,18 @@ function runTool(tool, args) {
     return Promise.resolve({ code: -1, stdout: '', stderr: `Tool "${tool}" is not allowed` });
   }
   const safeArgs = (Array.isArray(args) ? args : [args]).map(String);
+  // .cmd shims on Windows (npm, code, yarn…) need cmd.exe to resolve; real
+  // .exe tools (git, docker…) must run shell-free so user-supplied arguments
+  // (e.g. commit messages) can never be interpreted by the shell.
+  const needsShell = IS_WIN && ['npm', 'npx', 'pnpm', 'yarn', 'code'].includes(tool);
+  const spawnCmd = needsShell && IS_WIN ? 'cmd.exe' : tool;
+  const spawnArgs = needsShell ? ['/d', '/s', '/c', tool, ...safeArgs] : safeArgs;
   return new Promise((resolve) => {
-    execFile(IS_WIN ? tool : tool, safeArgs, {
+    execFile(spawnCmd, spawnArgs, {
       timeout: 20000,
       windowsHide: true,
       maxBuffer: 4 * 1024 * 1024,
-      shell: IS_WIN, // resolve .cmd shims like npm/code on Windows
+      shell: needsShell,
     }, (err, stdout, stderr) => {
       if (err && !stdout && !stderr && err.code === 'ENOENT') {
         resolve({ code: -1, stdout: '', stderr: `${tool} is not installed or not on PATH`, error: 'ENOENT' });

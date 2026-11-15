@@ -133,11 +133,11 @@ function registerIpc(ctx) {
   });
 
   ipcMain.handle('sys:processes', () => stats.processes());
-  ipcMain.handle('sys:kill', (_e, pid) => stats.killProcess(pid));
+  ipcMain.handle('sys:kill', (_e, { pid } = {}) => stats.killProcess(pid));
   ipcMain.handle('sys:drives', () => stats.drives(true));
 
   // ---------- filesystem ----------
-  ipcMain.handle('fs:list', (_e, dir) => listDir(dir));
+  ipcMain.handle('fs:list', (_e, { dir } = {}) => listDir(dir));
   ipcMain.handle('fs:home', () => os.homedir());
 
   ipcMain.handle('fs:read', (_e, { path: p, max = 262144 } = {}) => {
@@ -162,7 +162,7 @@ function registerIpc(ctx) {
     return { ok: true };
   });
 
-  ipcMain.handle('fs:mkdir', (_e, p) => {
+  ipcMain.handle('fs:mkdir', (_e, { path: p } = {}) => {
     if (!isSafePath(p)) throw new Error('Invalid path');
     fs.mkdirSync(p, { recursive: true });
     return { ok: true };
@@ -182,7 +182,7 @@ function registerIpc(ctx) {
 
   ipcMain.handle('fs:search', (_e, { dir, query, limit } = {}) => searchDir(dir, query, limit));
 
-  ipcMain.handle('fs:pickFolder', async (e, title) => {
+  ipcMain.handle('fs:pickFolder', async (e, { title } = {}) => {
     const win = BrowserWindow.fromWebContents(e.sender) || getWindow();
     const res = await dialog.showOpenDialog(win, {
       title: String(title || 'Select folder'),
@@ -196,19 +196,19 @@ function registerIpc(ctx) {
   ipcMain.handle('sh:launch', (_e, { app: appKey, arg } = {}) => launcher.launch(String(appKey || ''), arg));
   ipcMain.handle('sh:detect', () => launcher.detect());
 
-  ipcMain.handle('sh:openExternal', (_e, url) => {
+  ipcMain.handle('sh:openExternal', (_e, { url } = {}) => {
     const u = String(url || '');
     if (!/^https?:\/\//i.test(u)) throw new Error('Only http(s) URLs are allowed');
     return shell.openExternal(u).then(() => ({ ok: true }));
   });
 
-  ipcMain.handle('sh:openPath', async (_e, p) => {
+  ipcMain.handle('sh:openPath', async (_e, { path: p } = {}) => {
     if (!isSafePath(p)) throw new Error('Invalid path');
     const err = await shell.openPath(p);
     return err ? { ok: false, message: err } : { ok: true };
   });
 
-  ipcMain.handle('sh:showInFolder', (_e, p) => {
+  ipcMain.handle('sh:showInFolder', (_e, { path: p } = {}) => {
     if (!isSafePath(p)) throw new Error('Invalid path');
     shell.showItemInFolder(p);
     return { ok: true };
@@ -278,7 +278,7 @@ function registerIpc(ctx) {
   });
 
   // ---------- window controls ----------
-  ipcMain.handle('win:controls', (e, action) => {
+  ipcMain.handle('win:controls', (e, { action } = {}) => {
     const win = BrowserWindow.fromWebContents(e.sender) || getWindow();
     if (!win) return { ok: false };
     switch (String(action || '')) {

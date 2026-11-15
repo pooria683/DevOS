@@ -69,6 +69,27 @@ for (const ch of invoked) {
   ipc.includes(`'${ch}'`) ? ok(`ipc channel ${ch}`) : fail(`ipc channel ${ch}`, '— invoked in preload but not registered in main');
 }
 
+// 3b. Payload shape consistency: preload sends `{ key: … }` objects, so every
+// main-process handler for that channel must reference the same keys.
+const invokeCalls = [...preload.matchAll(/invoke\('([a-z:]+)',\s*\{([^}]*)\}\)/gi)];
+for (const [, ch, keysRaw] of invokeCalls) {
+  const keys = keysRaw.split(',').map((k) => k.trim().split(':')[0].trim()).filter(Boolean);
+  if (!keys.length) continue;
+  const handlerMatch = ipc.match(new RegExp(`ipcMain\\.handle\\('${ch.replace(/:/g, '\\:')}',[^)]*\\)([\\s\\S]{0,400})`));
+  if (!handlerMatch) continue; // already reported by 3 if missing
+  const body = handlerMatch[1];
+  // Extract destructured names from the handler's parameter list plus first lines.
+  const paramArea = body.slice(0, 200);
+  const destructured = [...paramArea.matchAll(/\{\s*([^}]*)\s*\}\s*=/g)].flatMap((m) =>
+    m[1].split(',').map((s) => s.trim().split(':')[0].replace(/ =.*/, '').trim()));
+  const missing = keys.filter((k) => !destructured.includes(k) && !paramArea.includes(`.${k}`) && !paramArea.includes(k));
+  if (destructured.length && missing.length) {
+    fail(`ipc payload ${ch}`, `— preload sends { ${keys.join(', ')} } but handler destructures [${destructured.join(', ')}]`);
+  } else {
+    ok(`ipc payload ${ch} { ${keys.join(', ')} }`);
+  }
+}
+
 // 4. Critical files exist
 for (const rel of ['package.json', 'assets/icons/devos.png', 'assets/icons/devos.ico', 'assets/icons/tray.png']) {
   fs.existsSync(path.join(ROOT, rel)) ? ok(`present ${rel}`) : fail(`present ${rel}`, '— run npm run build:icon');
