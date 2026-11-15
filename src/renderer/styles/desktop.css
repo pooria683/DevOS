@@ -1,0 +1,212 @@
+/* ============================================================
+   DevOS — desktop: wallpaper, effects, icons, boot, dev HUD
+   ============================================================ */
+
+#wallpaper {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  background: linear-gradient(160deg, var(--wall-grad-a) 0%, var(--wall-grad-b) 100%);
+}
+
+/* CRT scanlines */
+.fx-scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: var(--scan-opacity);
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.5) 0px,
+    rgba(255, 255, 255, 0.5) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
+}
+
+/* Edge vignette for a CRT tube feel */
+.fx-vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+/* Subtle refresh flicker (retro theme) */
+.fx-flicker {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  background: rgba(255, 255, 255, 0.015);
+  animation: crtFlicker 7s infinite steps(60);
+}
+@keyframes crtFlicker {
+  0%, 94%, 100% { opacity: 0; }
+  95% { opacity: 1; }
+  96% { opacity: 0.2; }
+  97% { opacity: 0.9; }
+}
+
+/* ---------------- Boot sequence ---------------- */
+#boot {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  transition: opacity 0.45s ease;
+  cursor: pointer;
+}
+#boot.done { opacity: 0; pointer-events: none; }
+#boot-log {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+  text-shadow: var(--glow);
+  white-space: pre-wrap;
+  min-height: 170px;
+  width: min(560px, 86vw);
+}
+#boot-log .ok { color: var(--ok); }
+#boot-log .dim { color: var(--text-dim); }
+.boot-bar {
+  width: min(560px, 86vw);
+  height: 3px;
+  background: var(--border);
+  overflow: hidden;
+  border-radius: 2px;
+}
+.boot-bar i {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+  box-shadow: var(--glow);
+  transition: width 0.25s ease;
+}
+
+/* ---------------- Desktop icons ---------------- */
+#desktop {
+  position: fixed;
+  inset: 0 0 var(--taskbar-h) 0;
+  z-index: 1;
+  padding: 18px 14px;
+  overflow: hidden;
+}
+
+.desk-icons {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 6px;
+  height: 100%;
+  width: fit-content;
+}
+
+.desk-icon {
+  width: 88px;
+  height: 88px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  cursor: default;
+  transition: background 0.12s, border-color 0.12s;
+}
+.desk-icon:hover { background: var(--accent-soft); border-color: var(--border); }
+.desk-icon.selected { background: var(--accent-soft); border-color: var(--accent); }
+.desk-icon .glyph {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  filter: drop-shadow(0 0 6px var(--accent-soft));
+}
+.desk-icon .glyph svg { width: 34px; height: 34px; }
+.desk-icon .label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text);
+  text-align: center;
+  line-height: 1.25;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  max-width: 84px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------------- Developer mode HUD ---------------- */
+#hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 400;
+  height: auto;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  overflow: hidden;
+}
+body.dev-mode { --hud-h: 34px; }
+#desktop { top: var(--hud-h); }
+
+.hud-cell {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  border-right: 1px solid var(--border);
+  white-space: nowrap;
+  color: var(--text-dim);
+}
+.hud-cell b { color: var(--text); font-weight: 600; }
+.hud-cell .kpi { color: var(--accent); min-width: 44px; text-align: right; }
+.hud-cell.hot .kpi { color: var(--warn); }
+.hud-cell.critical .kpi { color: var(--danger); }
+.hud-brand {
+  color: var(--accent);
+  text-shadow: var(--glow);
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.hud-branch { color: var(--ok); }
+.hud-actions { margin-left: auto; display: flex; align-items: center; gap: 4px; padding-right: 8px; }
+.hud-btn {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  padding: 2px 9px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text-dim);
+  background: transparent;
+  cursor: pointer;
+  transition: color 0.12s, border-color 0.12s;
+}
+.hud-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+@media (max-width: 900px) {
+  .hud-cell.optional { display: none; }
+}

@@ -1,0 +1,167 @@
+/* ============================================================
+   DevOS — built-in terminal
+   ============================================================ */
+
+.term-wrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  background: var(--term-bg);
+}
+
+.term-tabs {
+  display: flex;
+  align-items: stretch;
+  background: color-mix(in srgb, var(--bg) 75%, transparent);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.term-tabs::-webkit-scrollbar { display: none; }
+.term-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  color: var(--text-faint);
+  border-right: 1px solid var(--border);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s, color 0.12s;
+  position: relative;
+}
+.term-tab:hover { color: var(--text-dim); background: var(--accent-soft); }
+.term-tab.active { color: var(--accent); background: var(--accent-soft); }
+.term-tab.active::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 2px;
+  background: var(--accent);
+  box-shadow: var(--glow);
+}
+.term-tab .x {
+  width: 15px;
+  height: 15px;
+  display: grid;
+  place-items: center;
+  border-radius: 3px;
+  color: var(--text-faint);
+  font-size: 10px;
+}
+.term-tab .x:hover { color: var(--danger); background: rgba(248, 113, 113, 0.15); }
+.term-tab .busy-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 6px var(--ok);
+  animation: pulse 1s infinite;
+}
+.term-tab .shell-name { max-width: 130px; overflow: hidden; text-overflow: ellipsis; }
+.term-new-tab {
+  padding: 6px 12px;
+  color: var(--text-faint);
+  font-size: 14px;
+  line-height: 1;
+}
+.term-new-tab:hover { color: var(--accent); background: var(--accent-soft); }
+
+.term-output {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 12px 4px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--text);
+  user-select: text;
+  word-break: break-word;
+  white-space: pre-wrap;
+  scrollbar-gutter: stable;
+}
+.term-output a { color: var(--accent-2); }
+.t-line { min-height: 1.2em; }
+.t-cmd { color: var(--text); }
+.t-cmd .t-prompt { color: var(--term-prompt); text-shadow: var(--glow); }
+.t-cmd .t-path { color: var(--term-dir); }
+.t-err { color: var(--danger); }
+.t-ok { color: var(--ok); }
+.t-warn { color: var(--warn); }
+.t-dim { color: var(--text-dim); }
+.t-accent { color: var(--accent); }
+.t-cyan { color: var(--accent-2); }
+
+.term-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 10px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  position: relative;
+}
+.term-input-row .t-prompt {
+  color: var(--term-prompt);
+  text-shadow: var(--glow);
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.term-input-row .t-prompt .t-path { color: var(--term-dir); text-shadow: none; }
+.term-input-row input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  padding: 2px 0;
+}
+.term-input-row input:focus { outline: none; box-shadow: none; border: none; }
+
+.term-suggest {
+  position: absolute;
+  left: 12px;
+  bottom: calc(100% + 2px);
+  background: var(--panel-2);
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  padding: 5px 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  pointer-events: none;
+  max-width: 90%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.term-suggest b { color: var(--accent); font-weight: 600; }
+
+.term-stop {
+  flex: 0 0 auto;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 8px;
+  color: var(--danger);
+  font-size: 10.5px;
+  background: rgba(248, 113, 113, 0.08);
+}
+.term-stop:hover { border-color: var(--danger); box-shadow: 0 0 10px rgba(248,113,113,.3); }
+
+/* ANSI-colored flow from the backend */
+.ansi-b { font-weight: 700; }
+.ansi-d { opacity: 0.7; }
+.ansi-i { font-style: italic; }
+.ansi-u { text-decoration: underline; }
+.ansi-fg0 { color: #3f3f46; } .ansi-fg1 { color: #f87171; }
+.ansi-fg2 { color: #34d399; } .ansi-fg3 { color: #fbbf24; }
+.ansi-fg4 { color: #60a5fa; } .ansi-fg5 { color: #c084fc; }
+.ansi-fg6 { color: #22d3ee; } .ansi-fg7 { color: #e4e4e7; }
+.ansi-fg8 { color: #71717a; } .ansi-fg9 { color: #fca5a5; }
+.ansi-fg10 { color: #86efac; } .ansi-fg11 { color: #fde68a; }
+.ansi-fg12 { color: #93c5fd; } .ansi-fg13 { color: #d8b4fe; }
+.ansi-fg14 { color: #67e8f9; } .ansi-fg15 { color: #fafafa; }

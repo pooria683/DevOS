@@ -1,0 +1,121 @@
+/* ============================================================
+   DevOS — window manager: chrome, drag, resize, animations
+   ============================================================ */
+
+#windows {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: var(--hud-h);
+  bottom: var(--taskbar-h);
+  z-index: 10;
+  overflow: hidden;
+  pointer-events: none;
+}
+#windows > * { pointer-events: auto; }
+
+.win {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  min-width: 320px;
+  min-height: 200px;
+  background: color-mix(in srgb, var(--panel) 94%, transparent);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-win);
+  overflow: hidden;
+  transition: box-shadow 0.15s, border-color 0.15s, opacity 0.14s ease, transform 0.14s ease;
+}
+
+.win.focused {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.7), 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent), var(--glow);
+}
+
+.win.maximized { border-radius: 0; border-left: none; border-right: none; }
+
+.win.opening { animation: winIn 0.16s ease-out; }
+@keyframes winIn {
+  from { opacity: 0; transform: scale(0.97) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.win.closing { opacity: 0; transform: scale(0.97); pointer-events: none; }
+.win.minimizing { opacity: 0; transform: scale(0.85) translateY(60px); pointer-events: none; }
+.win.hidden-win { display: none; }
+
+/* ---- Title bar ---- */
+.win-titlebar {
+  height: 34px;
+  flex: 0 0 34px;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(to bottom, var(--panel-2), color-mix(in srgb, var(--panel-2) 80%, var(--bg)));
+  border-bottom: 1px solid var(--border);
+  cursor: default;
+  touch-action: none;
+}
+.win.focused .win-titlebar { background: linear-gradient(to bottom, color-mix(in srgb, var(--accent-soft) 45%, var(--panel-2)), var(--panel-2)); }
+.win-titlebar .t-icon { width: 30px; display: grid; place-items: center; color: var(--accent); }
+.win-titlebar .t-icon svg { width: 14px; height: 14px; }
+.win-titlebar .t-title {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-dim);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  letter-spacing: 0.4px;
+}
+.win.focused .win-titlebar .t-title { color: var(--text); }
+.win-titlebar .t-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-faint);
+  margin-right: 8px;
+}
+.win-titlebar .t-actions { display: flex; height: 100%; }
+.win-titlebar .t-btn {
+  width: 42px;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: var(--text-dim);
+  transition: background 0.12s, color 0.12s;
+}
+.win-titlebar .t-btn svg { width: 11px; height: 11px; }
+.win-titlebar .t-btn:hover { background: var(--accent-soft); color: var(--accent); }
+.win-titlebar .t-btn.close:hover { background: rgba(248, 113, 113, 0.18); color: var(--danger); }
+
+.win-body {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--term-bg);
+}
+
+/* ---- Resize handles ---- */
+.rz { position: absolute; z-index: 5; }
+.rz-n { top: -3px; left: 8px; right: 8px; height: 6px; cursor: n-resize; }
+.rz-s { bottom: -3px; left: 8px; right: 8px; height: 6px; cursor: s-resize; }
+.rz-e { right: -3px; top: 8px; bottom: 8px; width: 6px; cursor: e-resize; }
+.rz-w { left: -3px; top: 8px; bottom: 8px; width: 6px; cursor: w-resize; }
+.rz-ne { top: -3px; right: -3px; width: 12px; height: 12px; cursor: ne-resize; }
+.rz-nw { top: -3px; left: -3px; width: 12px; height: 12px; cursor: nw-resize; }
+.rz-se { bottom: -3px; right: -3px; width: 12px; height: 12px; cursor: se-resize; }
+.rz-sw { bottom: -3px; left: -3px; width: 12px; height: 12px; cursor: sw-resize; }
+
+/* ---- Snap preview ---- */
+#snap-preview {
+  position: fixed;
+  z-index: 9;
+  border: 1px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: var(--radius);
+  box-shadow: var(--glow);
+  pointer-events: none;
+  transition: all 0.1s ease;
+}

@@ -1,0 +1,127 @@
+/* ============================================================
+   DevOS — taskbar (terminal status-bar style) + system tray
+   ============================================================ */
+
+#taskbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--taskbar-h);
+  z-index: 500;
+  display: flex;
+  align-items: stretch;
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.tb-start {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  border-right: 1px solid var(--border);
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background 0.12s;
+  text-shadow: var(--glow);
+}
+.tb-start:hover { background: var(--accent-soft); }
+.tb-start.open { background: var(--accent-soft); }
+.tb-start .logo { width: 16px; height: 16px; display: grid; place-items: center; }
+.tb-start .logo svg { width: 16px; height: 16px; }
+
+.tb-windows {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  padding: 3px 6px;
+  gap: 4px;
+}
+
+.tb-win-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  max-width: 190px;
+  min-width: 52px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  overflow: hidden;
+}
+.tb-win-btn svg { width: 13px; height: 13px; flex: 0 0 auto; }
+.tb-win-btn span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tb-win-btn:hover { background: var(--accent-soft); color: var(--text); }
+.tb-win-btn.active {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  background: var(--accent-soft);
+}
+.tb-win-btn.active::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 2px;
+  height: 2px;
+  background: var(--accent);
+  box-shadow: var(--glow);
+  border-radius: 2px;
+}
+.tb-win-btn.minimized { opacity: 0.6; }
+
+/* ---- Tray ---- */
+.tb-tray {
+  display: flex;
+  align-items: center;
+  border-left: 1px solid var(--border);
+}
+.tray-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 11px;
+  height: 100%;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  white-space: nowrap;
+}
+.tray-item:hover { background: var(--accent-soft); color: var(--text); }
+.tray-item svg { width: 14px; height: 14px; }
+.tray-item.accent { color: var(--accent); }
+.tray-item svg.dim-icon { opacity: 0.45; }
+.tray-clock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  line-height: 1.3;
+  cursor: pointer;
+  padding: 0 13px;
+  color: var(--text);
+}
+.tray-clock .t { font-size: 12px; font-weight: 600; }
+.tray-clock .d { font-size: 9.5px; color: var(--text-dim); }
+.tray-clock:hover { background: var(--accent-soft); }
+
+.tray-batt { position: relative; }
+.tray-batt .pct { font-size: 10.5px; }
+
+@media (max-width: 860px) {
+  .tray-item .txt { display: none; }
+  .tb-win-btn { max-width: 120px; }
+  .hud-cell { padding: 0 8px; }
+}

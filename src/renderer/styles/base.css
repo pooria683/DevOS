@@ -1,0 +1,149 @@
+/* ============================================================
+   DevOS — base styles, tokens, typography, shared components
+   ============================================================ */
+
+:root {
+  --font-mono: "Cascadia Code", "JetBrains Mono", "Fira Code", Consolas, "Courier New", ui-monospace, monospace;
+  --font-ui: "Segoe UI Variable Text", "Segoe UI", Inter, system-ui, -apple-system, sans-serif;
+
+  /* Dark IDE (default) — overridden per theme in themes.css */
+  --bg: #05070d;
+  --bg-2: #0a0f1a;
+  --panel: #0c1220;
+  --panel-2: #101828;
+  --border: #1c2a42;
+  --border-strong: #27395c;
+  --text: #d7e3f4;
+  --text-dim: #7d8ca6;
+  --text-faint: #4c5a72;
+  --accent: #22d3ee;
+  --accent-2: #3b82f6;
+  --accent-soft: rgba(34, 211, 238, 0.12);
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --danger: #f87171;
+  --glow: 0 0 14px rgba(34, 211, 238, 0.35);
+  --shadow-win: 0 18px 50px rgba(0, 0, 0, 0.65), 0 0 0 1px var(--border);
+  --radius: 4px;
+  --taskbar-h: 44px;
+  --hud-h: 0px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.no-animations *, body.no-animations *::before, body.no-animations *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+::selection { background: var(--accent-soft); color: var(--accent); }
+
+/* Scrollbars — thin, terminal-flavored */
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+::-webkit-scrollbar-corner { background: transparent; }
+
+input, textarea, button, select { font: inherit; color: inherit; }
+
+button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+}
+button:focus-visible, input:focus-visible { outline: 1px solid var(--accent); outline-offset: 1px; }
+
+input[type="text"], input[type="search"], input[type="url"], textarea {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: 5px 9px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+input[type="text"]:focus, input[type="search"]:focus, input[type="url"]:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-soft), var(--glow);
+  outline: none;
+}
+input::placeholder, textarea::placeholder { color: var(--text-faint); }
+
+/* Shared button styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  white-space: nowrap;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s, color 0.15s;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); box-shadow: var(--glow); }
+.btn.primary { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.btn.danger:hover { border-color: var(--danger); color: var(--danger); box-shadow: 0 0 12px rgba(248,113,113,.3); }
+.btn.small { padding: 3px 8px; font-size: 10.5px; }
+.btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+.btn svg { width: 13px; height: 13px; }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-dim);
+  background: color-mix(in srgb, var(--bg-2) 70%, transparent);
+}
+.chip.ok { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 45%, transparent); }
+.chip.warn { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 45%, transparent); }
+.chip.err { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 45%, transparent); }
+
+.mono { font-family: var(--font-mono); }
+.dim { color: var(--text-dim); }
+.faint { color: var(--text-faint); }
+.hidden { display: none !important; }
+
+.spin { animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+.pulse { animation: pulse 1.6s ease-in-out infinite; }
+
+/* Keybinding hint */
+kbd {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 1px 5px;
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  background: var(--bg-2);
+  color: var(--text-dim);
+}
