@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'" />
+  <meta name="color-scheme" content="dark" />
+  <title>DevOS</title>
+  <link rel="icon" href="./assets/devos.png" />
+  <link rel="stylesheet" href="./styles/base.css" />
+  <link rel="stylesheet" href="./styles/themes.css" />
+  <link rel="stylesheet" href="./styles/desktop.css" />
+  <link rel="stylesheet" href="./styles/windows.css" />
+  <link rel="stylesheet" href="./styles/taskbar.css" />
+  <link rel="stylesheet" href="./styles/startmenu.css" />
+  <link rel="stylesheet" href="./styles/terminal.css" />
+  <link rel="stylesheet" href="./styles/apps.css" />
+</head>
+<body data-theme="darkide">
+
+  <!-- Desktop wallpaper layers -->
+  <canvas id="wallpaper" aria-hidden="true"></canvas>
+  <div class="fx-scanlines" aria-hidden="true"></div>
+  <div class="fx-vignette" aria-hidden="true"></div>
+  <div class="fx-flicker" aria-hidden="true"></div>
+
+  <!-- Boot sequence overlay -->
+  <div id="boot" aria-hidden="true">
+    <pre id="boot-log"></pre>
+    <div class="boot-bar"><i id="boot-bar-fill"></i></div>
+  </div>
+
+  <!-- Developer mode HUD -->
+  <div id="hud" class="hidden"></div>
+
+  <!-- Desktop icon surface -->
+  <div id="desktop" role="application" aria-label="DevOS desktop"></div>
+
+  <!-- Window layer -->
+  <div id="windows" aria-label="DevOS windows"></div>
+  <div id="snap-preview" class="hidden"></div>
+
+  <!-- Taskbar -->
+  <div id="taskbar"></div>
+
+  <!-- Overlays -->
+  <div id="startmenu" class="hidden"></div>
+  <div id="ctxmenu" class="hidden"></div>
+  <div id="toasts" aria-live="polite"></div>
+
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
